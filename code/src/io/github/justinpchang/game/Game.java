@@ -1,5 +1,6 @@
 package io.github.justinpchang.game;
 
+import io.github.justinpchang.game.gfx.Screen;
 import io.github.justinpchang.game.gfx.SpriteSheet;
 
 import java.awt.BorderLayout;
@@ -30,7 +31,7 @@ public class Game extends Canvas implements Runnable{
 	private BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
 	private int[] pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
 	
-	private SpriteSheet spriteSheet = new SpriteSheet("/sprite_sheet.png");
+	private Screen screen;
 	
 	public Game() {
 		
@@ -50,6 +51,10 @@ public class Game extends Canvas implements Runnable{
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		
+	}
+	
+	public void init() {
+		screen = new Screen(WIDTH, HEIGHT, new SpriteSheet("/sprite_sheet.png"));
 	}
 	
 	public synchronized void start() {
@@ -75,6 +80,8 @@ public class Game extends Canvas implements Runnable{
 		
 		long lastTimer = System.currentTimeMillis();
 		double delta = 0;
+		
+		init();
 		
 		while(running) {
 			
@@ -115,6 +122,8 @@ public class Game extends Canvas implements Runnable{
 	public void tick() {
 		
 		tickCount++;
+		screen.xOffset++;
+		screen.yOffset++;
 		
 		for(int i = 0; i < pixels.length; i++) {
 			pixels[i] = i + tickCount;
@@ -129,6 +138,8 @@ public class Game extends Canvas implements Runnable{
 			createBufferStrategy(3);
 			return;
 		}
+		
+		screen.render(pixels, 0, WIDTH);
 		
 		Graphics g = bs.getDrawGraphics();
 		
